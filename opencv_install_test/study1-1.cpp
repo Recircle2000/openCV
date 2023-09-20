@@ -4,30 +4,30 @@
 using namespace cv;
 using namespace std;
 
-//20191220 이재원
+//20191220 이재원 코드 3-8
 
 int main() {
 	cout << "Hello OpenCV" << CV_VERSION << endl;
 
-	Mat img = imread("lenna.bmp", IMREAD_GRAYSCALE);
-	Mat img2(480, 640, CV_8UC3, Scalar(0, 255, 255));
-	Mat mat1 = Mat::zeros(3, 3,CV_32SC1);
+	Mat img1 = imread("dog.bmp");
 
-	mat1.create(480, 640,CV_32FC1);
-	mat1.setTo(1.f);
+	Mat img2 = img1;
+	Mat img3;
+	img3 = img1;
 
+	Mat img4 = img1.clone();
+	Mat img5;
+	img1.copyTo(img5);
+	img1.setTo(Scalar(0,255,255));
 
-
-
-	if (img.empty())
-	{
-		cerr << "Image load failed!" << endl;
-		return -1;
-	}
-
-	namedWindow("image",WINDOW_AUTOSIZE);
-	imshow("image", mat1);
+	imshow("img1", img1);
+	imshow("img2", img2);
+	imshow("img3", img3);
+	imshow("img4", img4);
+	imshow("img5", img5);
 
 	waitKey(0);
+	destroyAllWindows();
+
 	return 0;
 }
