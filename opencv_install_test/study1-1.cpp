@@ -21,15 +21,14 @@ int main() {
 
 	Mat img2 = img1.clone();
 
-	for (int j = 0; j < img1.rows; j++)
+	for (int j = 0; j < img2.rows; j++)
 	{
-		for (int i = 0; i < img1.cols; i++)
+		for (int i = 0; i < img2.cols; i++)
 		{
-			Vec3b& pixel = img1.at<Vec3b>(j, i);
+			Vec3b& pixel = img2.at<Vec3b>(j, i);
 			pixel[0] = 255 - pixel[0];
 			pixel[1] = 255 - pixel[1];
 			pixel[2] = 255 - pixel[2];
-
 		}
 	}
 	imshow("image", img1);
