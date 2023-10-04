@@ -5,35 +5,38 @@ using namespace cv;
 using namespace std;
 
 int main() {
-	Mat sourceImage = imread("cat.bmp");
-	Mat copyimage = sourceImage.clone();
+	// VideoCapture cap("stopwatch.avi"); 이렇게 하면 비디오 불러오기
+	VideoCapture cap(0); // 이렇게 하면 카메라 불러오기
 
-	for (int j = 0; j < copyimage.rows; j++)
+	if (!cap.isOpened())
 	{
-		for (int i = 0; i < copyimage.cols; i++)
+		cerr << "카메라 오픈 실패" << endl;
+		return 0;
+	}
+
+	cout << "Frame width" << cvRound(cap.get(CAP_PROP_FRAME_WIDTH)) << endl;
+	cout << "Frame height" << cvRound(cap.get(CAP_PROP_FRAME_HEIGHT)) << endl;
+
+	Mat frame, inversed;
+
+	while (true)
+	{
+		cap >> frame;
+		if (frame.empty())
 		{
-			Vec3b& pixel = copyimage.at<Vec3b>(j, i);
-			uchar b = pixel[0];
-			uchar g = pixel[1];
-			uchar r = pixel[2];
-			uchar gray = (uchar)((pixel[0] + pixel[1] + pixel[2]) / 3);
+			break;
+		}
+		//이 사이에 프레임 처리 코드 작성
+		inversed = ~frame;
+		//이 사이에 프레임 처리 코드 작성
+		imshow("frame", frame);
+		imshow("inversed", inversed);
 
-			if ((b>=0 && b<=60) && (g >= 20&& b <= 100)&& (r >= 60 && r <= 140))
-			{
-				
-			}
-			else
-			{
-				pixel[0] = gray;
-				pixel[1] = gray;
-				pixel[2] = gray;
-			}
-
-			
+		if (waitKey(24) == 27)
+		{
+			break;
 		}
 	}
-	imshow("source image", sourceImage);
-	imshow("copy image", copyimage);
 
 	waitKey(0);
 	destroyAllWindows();
