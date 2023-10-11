@@ -5,23 +5,47 @@
 using namespace cv;
 using namespace std;
 
+Mat img;
+Point pt0ld;
+
+void on_mouse(int event, int x, int y, int flags, void*)
+{
+	switch (event)
+	{
+	case EVENT_LBUTTONDOWN:
+		pt0ld = Point(x, y);
+		cout << "EVENT_LBUTTONDOWN" << x << "," << y << endl;
+		break;
+	case EVENT_LBUTTONUP:
+		cout << "EVENT_LBUTTONUP" << x << ", " << y << endl;
+		break;
+	case EVENT_MOUSEMOVE:
+		if (flags & EVENT_FLAG_LBUTTON)
+		{
+			line(img, pt0ld, Point(x, y), Scalar(0, 255, 255), 2);
+			imshow("img", img);
+			pt0ld = Point(x, y);
+		}
+		break;
+	default:
+			break;
+	}
+}
 int main() {
-	Mat img(200, 640,CV_8UC3, Scalar(255, 255, 255));
+	img = imread("lenna.bmp");
 
-	const String text = "20191220 이재원";
-	int fontFace = FONT_HERSHEY_PLAIN;
-	double fontScale =1.0;
-	int thickness = 1;
+	if (img.empty())
+	{
+		cerr << "로드실패" << endl;
+		return -1;
+	}
 
-	Size sizeText = getTextSize(text, fontFace, fontScale, thickness, 0);
-	Size sizeImg = img.size();
-
-	Point org((sizeImg.width - sizeText.width)/2, (sizeImg.height + sizeText.height)/2);
-	putText(img, text, org, fontFace,fontScale, Scalar(255, 0, 0), thickness,LINE_8,false);
-	rectangle(img, org, org + Point(sizeText.width*2, sizeText.height*5), Scalar(255, 0, 0), 1);
+	namedWindow("img");
+	setMouseCallback("img", on_mouse);
 
 	imshow("img", img);
 	waitKey(0);
-	destroyAllWindows();
+
 	return 0;
+
 }
