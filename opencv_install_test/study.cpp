@@ -1,53 +1,27 @@
 #include <opencv2/opencv.hpp>
 #include <iostream>
+#include <iso646.h>
 
 using namespace cv;
 using namespace std;
 
 int main() {
-	//VideoCapture cap("stopwatch.avi"); //이렇게 하면 비디오 불러오기
-	VideoCapture cap(0); // 이렇게 하면 카메라 불러오기
+	Mat img(200, 640,CV_8UC3, Scalar(255, 255, 255));
 
-	if (!cap.isOpened())
-	{
-		cerr << "카메라 or 피디오 오픈 실패" << endl;
-		return 0;
-	}
+	const String text = "20191220 이재원";
+	int fontFace = FONT_HERSHEY_PLAIN;
+	double fontScale =1.0;
+	int thickness = 1;
 
-	int w = cvRound(cap.get(CAP_PROP_FRAME_WIDTH));
-	int h = cvRound(cap.get(CAP_PROP_FRAME_HEIGHT));
-	double fps = cap.get(CAP_PROP_FPS);
+	Size sizeText = getTextSize(text, fontFace, fontScale, thickness, 0);
+	Size sizeImg = img.size();
 
-	int fourcc = VideoWriter::fourcc('D', 'I', 'V', 'X');
-	int delay = cvRound(1000 / fps);
+	Point org((sizeImg.width - sizeText.width)/2, (sizeImg.height + sizeText.height)/2);
+	putText(img, text, org, fontFace,fontScale, Scalar(255, 0, 0), thickness,LINE_8,false);
+	rectangle(img, org, org + Point(sizeText.width*2, sizeText.height*5), Scalar(255, 0, 0), 1);
 
-	VideoWriter outputVideo("output.avi", fourcc, fps, Size(w, h));
-
-	if (!outputVideo.isOpened())
-	{
-		cout << "file open failed!" << endl;
-		return 0;
-	}
-
-	Mat frame, inversed;
-	while (true)
-	{
-		cap >> frame;
-		if (frame.empty())
-		{
-			break;
-		}
-		inversed = ~frame;
-		outputVideo << inversed;
-
-		imshow("frame", frame);
-		imshow("inversed", inversed);
-
-		if (waitKey(delay) == 27)
-		{
-			break;
-		}
-	}
+	imshow("img", img);
+	waitKey(0);
 	destroyAllWindows();
 	return 0;
 }
