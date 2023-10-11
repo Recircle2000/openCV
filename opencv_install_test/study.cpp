@@ -22,9 +22,11 @@ void on_mouse(int event, int x, int y, int flags, void*)
 	case EVENT_MOUSEMOVE:
 		if (flags & EVENT_FLAG_LBUTTON)
 		{
-			line(img, pt0ld, Point(x, y), Scalar(0, 255, 255), 2);
-			imshow("img", img);
-			pt0ld = Point(x, y);
+			Mat temp = img.clone();
+			//line(img, pt0ld, Point(x, y), Scalar(0, 255, 255), 2);
+			rectangle(temp, pt0ld, Point(x, y), Scalar(255, 255, 0), 2);
+			imshow("img", temp);
+			//pt0ld = Point(x, y);
 		}
 		break;
 	default:
@@ -33,13 +35,13 @@ void on_mouse(int event, int x, int y, int flags, void*)
 }
 int main() {
 	img = imread("lenna.bmp");
+	
 
 	if (img.empty())
 	{
 		cerr << "로드실패" << endl;
 		return -1;
 	}
-
 	namedWindow("img");
 	setMouseCallback("img", on_mouse);
 
