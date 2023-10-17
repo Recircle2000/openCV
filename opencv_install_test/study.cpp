@@ -7,38 +7,24 @@ using namespace std;
 
 
 int main() {
-	//Point 클래스는 점의 좌표를 나타냄
-	Point pt1;
-	pt1.x = 5;
-	pt1.y = 10;
-	Point pt2(10, 30);
-	Point pt3 = pt1 + pt2;
+	Mat img1 = imread("dog.bmp");
+	Mat img2 = img1; // 얕은복사
 
-	cout << "pt1:" << pt3 << endl;
+	Mat img3;
+	img3 = img1; //얕은복사
 
-	//Size 클래스는 크기를 나타냄.
-	Size sz1, sz2(10, 20);
-	cout << "sz1:" << sz1 << endl;
-	sz1.width = 5;
-	sz1.height = 10;
-	cout << "sz1:" << sz1 << endl;
+	Mat img4 = img1.clone(); //깊은복사(img1의 영상이 img4로)
+	Mat img5;
+	img1.copyTo(img5); //img1의 영상을 img5로 자기 스스로를 깊은복사함.
 
-	//Rect 클래스는 사각형 왼쪽 위 좌표와 그를 기준으로 크기를 나타냄.
-	Rect rc1;
-	Rect rc2(10, 10, 60, 40);
-	cout << "rc2:" << rc2 << endl;
+	img1.setTo(Scalar(0, 255, 255));
 
-	Mat img5 = Mat::zeros(10, 20,CV_8UC3);
-	Mat img4 = Mat::ones(10, 20, CV_8UC3);
-	Mat img1(20, 40,CV_8UC3, Scalar(0, 0, 0));
-	float data[] = {1, 2, 3, 4, 5, 6};
-	Mat img3(2, 3, CV_8UC3, data);
+	imshow("1", img1);
+	imshow("2", img2);
+	imshow("3", img3);
+	imshow("4", img4);
+	imshow("5", img5);
 
-	img3.create(5, 6, CV_8UC3);
-
-
-
-
-
-
+	waitKey();
+	destroyAllWindows();
 }
