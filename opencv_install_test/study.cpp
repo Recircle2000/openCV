@@ -5,49 +5,40 @@
 using namespace cv;
 using namespace std;
 
-Mat img;
-Point pt0ld;
 
-void on_mouse(int event, int x, int y, int flags, void*)
-{
-	switch (event)
-	{
-	case EVENT_LBUTTONDOWN:
-		pt0ld = Point(x, y);
-		cout << "EVENT_LBUTTONDOWN" << x << "," << y << endl;
-		break;
-	case EVENT_LBUTTONUP:
-		cout << "EVENT_LBUTTONUP" << x << ", " << y << endl;
-		break;
-	case EVENT_MOUSEMOVE:
-		if (flags & EVENT_FLAG_LBUTTON)
-		{
-			Mat temp = img.clone();
-			//line(img, pt0ld, Point(x, y), Scalar(0, 255, 255), 2);
-			rectangle(temp, pt0ld, Point(x, y), Scalar(255, 255, 0), 2);
-			imshow("img", temp);
-			//pt0ld = Point(x, y);
-		}
-		break;
-	default:
-			break;
-	}
-}
 int main() {
-	img = imread("lenna.bmp");
-	
+	//Point 클래스는 점의 좌표를 나타냄
+	Point pt1;
+	pt1.x = 5;
+	pt1.y = 10;
+	Point pt2(10, 30);
+	Point pt3 = pt1 + pt2;
 
-	if (img.empty())
-	{
-		cerr << "로드실패" << endl;
-		return -1;
-	}
-	namedWindow("img");
-	setMouseCallback("img", on_mouse);
+	cout << "pt1:" << pt3 << endl;
 
-	imshow("img", img);
-	waitKey(0);
+	//Size 클래스는 크기를 나타냄.
+	Size sz1, sz2(10, 20);
+	cout << "sz1:" << sz1 << endl;
+	sz1.width = 5;
+	sz1.height = 10;
+	cout << "sz1:" << sz1 << endl;
 
-	return 0;
+	//Rect 클래스는 사각형 왼쪽 위 좌표와 그를 기준으로 크기를 나타냄.
+	Rect rc1;
+	Rect rc2(10, 10, 60, 40);
+	cout << "rc2:" << rc2 << endl;
+
+	Mat img5 = Mat::zeros(10, 20,CV_8UC3);
+	Mat img4 = Mat::ones(10, 20, CV_8UC3);
+	Mat img1(20, 40,CV_8UC3, Scalar(0, 0, 0));
+	float data[] = {1, 2, 3, 4, 5, 6};
+	Mat img3(2, 3, CV_8UC3, data);
+
+	img3.create(5, 6, CV_8UC3);
+
+
+
+
+
 
 }
