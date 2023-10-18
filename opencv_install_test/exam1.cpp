@@ -5,68 +5,40 @@
 using namespace cv;
 using namespace std;
 
-Mat img;
-Mat img3;
-Point pt0ld;
-Point pt02d;
-
-
-void on_mouse(int event, int x, int y, int flags, void*)
-{
-	switch (event)
-	{
-	case EVENT_LBUTTONDOWN:
-		pt0ld = Point(x, y);
-		cout << "EVENT_LBUTTONDOWN" << x << "," << y << endl;
-		break;
-	case EVENT_LBUTTONUP:
-		pt02d = Point(x, y);
-		cout << "EVENT_LBUTTONUP" << x << ", " << y << endl;
-		img3 = img(Rect(pt0ld, pt02d));
-		imshow("img2", img3);
-
-	case EVENT_MOUSEMOVE:
-		if (flags & EVENT_FLAG_LBUTTON)
-		{
-			Mat temp = img.clone();
-			pt02d = Point(x, y);
-			rectangle(temp, pt0ld, pt02d, Scalar(255, 255, 0), 2);
-			imshow("img", temp);
-		}
-		break;
-	default:
-		break;
-	}
-}
 int main() {
-	img = imread("cat.bmp");
+	Mat bluescreenImage = imread("bluescreen.png");
+	Mat copyimage = bluescreenImage.clone(); //원본을 유지하기 
+	Mat backImage = imread("background.png");
 
-	if (img.empty())
+	for (int j = 0; j < copyimage.rows; j++)
 	{
-		cerr << "로드실패" << endl;
-		return -1;
-	}
-	namedWindow("img");
-	setMouseCallback("img", on_mouse);
-	while (true)
-	{
-		imshow("img", img);
-
-		if (waitKey() == 'g' || waitKey() == 'G')
+		for (int i = 0; i < copyimage.cols; i++)
 		{
-			if (img3.type() == CV_8UC1) {
-				img3 = img.clone(); // 흑백을 컬러로 되살림
-				img3 = img(Rect(pt0ld, pt02d)); // 그 다음 이미지를 자름
-				imshow("img2", img3); // 출력
+			Vec3b& pixel = copyimage.at<Vec3b>(j, i); // 크로마키 이미지의 원소값 참조
+			Vec3b& pixel2 = backImage.at<Vec3b>(j, i); // 백그라운드 이미지의 원소값 참조
+			//크로마키 이미지의 픽셀값
+			uchar b = pixel[0];
+			uchar g = pixel[1];
+			uchar r = pixel[2];
+			//백그라운드 이미지의 픽셀 값
+			uchar cb = pixel2[0];
+			uchar cg = pixel2[1];
+			uchar cr = pixel2[2];
+			//블루스크린 컬러값 rgb 1,0,252
+			//크로마키 이미지의 픽셀 값이 (블루스크린) 컬러값 범위 내에 들었을 경우, 그 픽셀을 백그라운드 이미지의 픽셀값으로 대체. 그렇지 않을 경우 아무것도 하지 않음.
+			if ((b >= 150) && (g >= 0 && g <= 255) && (r >= 0 && r <= 255))
+			{
+				pixel[0] = pixel2[0];
+				pixel[1] = pixel2[1];
+				pixel[2] = pixel2[2];
 			}
-			else if (img3.type() == CV_8UC3) {
-				img3 = img(Rect(pt0ld, pt02d)); // 이미지를 자름
-				cvtColor(img3, img3, COLOR_BGR2GRAY); // 컬러를 흑백으로 바꿈
-				imshow("img2", img3);// 출력
-			}
-
 		}
 	}
-	return 0;
+	imshow("source image", bluescreenImage);
+	imshow("process image", copyimage);
+	imwrite("20191220_이재원.png", copyimage);
 
+	waitKey(0);
+	destroyAllWindows();
+	return 0;
 }
