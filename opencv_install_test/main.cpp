@@ -8,7 +8,6 @@ using namespace std;
 void on_Contrast(int pos, void* userdata);
 
 Scalar mean();
-double avgBright;
 
 Mat calcGrayHist(const Mat& img)
 {
@@ -41,38 +40,39 @@ Mat getGrayHistImage(const Mat& hist)
 	}
 	return imgHist;
 }
+
 //상단 코드는 예제 5-7, 5-8과 같음.
 void main() {
-	Mat src = imread("lenna.bmp", IMREAD_GRAYSCALE);
+	Mat src = imread("coins.png", IMREAD_GRAYSCALE);
 	if (src.empty())
 	{
 		cerr << "로드 실패" << endl;
 		return;
 	}
-	Scalar meanValue = cv::mean(src); // 영상의 평균 밝기 구하기
-	avgBright = meanValue[0]; // 영상의 평균 밝기 구하기
+	double gmin, gmax;
+	double endsin_min= 30, endsin_max=200;
+	minMaxLoc(src, &gmin, &gmax);
 
-	namedWindow("dst");
-	createTrackbar("Contrast", "dst", 0, 100, on_Contrast, (void*)&src);
-	setTrackbarMin("Contrast", "dst", -50);
-	on_Contrast(0, (void*)&src);
+	Mat basic_dst = (src - gmin) * 255 / (gmax - gmin);
+	Mat Ends_in_dst = (src - endsin_min) * 255 / (endsin_max - endsin_min);
+	Mat equalization;
+
+	equalizeHist(src, equalization);
+
+	imshow("src", src);
+	imshow("src_Hist", getGrayHistImage(calcGrayHist(src)));
+
+	imshow("basic_dst", basic_dst);
+	imshow("basic_Hist", getGrayHistImage(calcGrayHist(basic_dst)));
+
+	imshow("Ends_in_dst", Ends_in_dst);
+	imshow("Ends_in_Hist", getGrayHistImage(calcGrayHist(Ends_in_dst)));
+
+	imshow("equalization", equalization);
+	imshow("equalization_Hist", getGrayHistImage(calcGrayHist(equalization)));
 
 	waitKey(0);
 	destroyAllWindows();
-}
-
-void on_Contrast(int pos, void* userdata)
-{
-	float alpha = pos * 0.01; // 찾아보니 트랙바는 정수만 지원. 내부적으로 0.01을 곱해 -0.5 ~ 1.0의 범위를 지원하도록 하였다.
-	Mat src = *(Mat*)userdata;
-	Mat dst = src + (src - (avgBright)) * alpha;
-	putText(dst, "contrast : " + to_string(alpha), Point(0, 25), FONT_HERSHEY_TRIPLEX, 1, Scalar(255, 0, 0));
-
-	Mat hist = calcGrayHist(dst);
-	Mat hist_img = getGrayHistImage(hist);
-
-	imshow("srcHist", hist_img);
-	imshow("dst", dst);
 }
 
 
