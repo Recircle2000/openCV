@@ -19,27 +19,20 @@ int main(void)
 	imshow("src1", src1);
 	imshow("src2", src2);
 
-	Mat dst1, dst2, dst2_1, dst3_1, dst3_2, dst3_3, dst4, dst5, dst6;
+	Mat dst1, dst2, dst3, dst4;
 
-	add(src1, src2, dst1);
-	dst2_1 = src1 - src2;
-	subtract(src1, src2, dst2);
-	addWeighted(src1, 0.1, src2, 0.1, 0, dst3_1);
-	addWeighted(src1, 0.5, src2, 0.5, 0, dst3_2);
-	addWeighted(src1, 1, src2, 1, 0, dst3_3);
-	absdiff(src1, src2, dst4);
-	multiply(src1, src2, dst5);
-	divide(src1, src2, dst6);
+	bitwise_and(src1, src2, dst1);
+	bitwise_or(src1, src2, dst2);
+	bitwise_xor(src1, src2, dst3);
+	bitwise_not(src1, dst4);
 
-	imshow("add", dst1);
-	imshow("subtract", dst2);
-	imshow("sub연산자 재정의", dst2_1);
-	imshow("addWeighted0.1", dst3_1);
-	imshow("addWeighted0.5", dst3_2);
-	imshow("addWeighted1.0", dst3_3);
-	imshow("absdiff", dst4);
-	imshow("multiply", dst5);
-	imshow("divide", dst6);
+
+	imshow("Dst1", dst1);
+	imshow("Dst2", dst2);
+	imshow("Dst3", dst3);
+	imshow("Dst4", dst4);
+
+
 
 	waitKey();
 
