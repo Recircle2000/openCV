@@ -17,14 +17,14 @@ int main(void)
 
 	imshow("src", src);
 	Mat dst;
-	//ksize 값이 3,5,7이 되도록 for반복문을 설정.
-	for (int ksize = 3; ksize<=7; ksize +=2)
+	//sigma 값을 1부터 5까지 증가시키면서 가우시안 블러링을 수행하고 그 결과를 화면에 출력.
+	for (int sigma = 3; sigma <=5; sigma ++)
 	{
-		//ksize x ksize 크기릐 평균값 필터 마스크를 이용하여 블러링을 수행.
-		blur(src, dst, Size(ksize, ksize));
+		//src 영상에 가우시안 표준 편차가 sigma인 가우시안 블러링을 수행하고 그 결과를 dst에 저장.
+		GaussianBlur(src, dst, Size(), (double)sigma);
 
-		//사용된 평균값 필터의 크기를 문자열 형태로 결과 영상 dst 위에 출력.
-		String dest = format("Mean : %dx%d", ksize, ksize);
+		//사용한 가우시안 표준 편차 값을 결과 영상 dst위에 출력
+		String dest = format("sigma = %d", sigma);
 		putText(dst, dest, Point(10, 30), FONT_HERSHEY_SIMPLEX, 1.0,
 			Scalar(255), 1, LINE_AA);
 
