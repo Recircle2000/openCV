@@ -7,27 +7,31 @@ using namespace std;
 
 int main()
 {
-	Mat src = imread("building.jpg", IMREAD_GRAYSCALE);
+	Mat src = imread("coins.png", IMREAD_GRAYSCALE);
 
 	if (src.empty())
 	{
 		cerr << " Images not found" << endl;
 		return -1;
 	}
-	Mat edge;
-	Canny(src, edge, 50, 150);
+	Mat blurred;
+	//입력 영상 src의 잡음 제거 용도로 blur 사용
+	blur(src, blurred, Size(3, 3));
 
-	//HoughLinesP()함수를 이용하여 모든 직선 성분의 시작점과 끝점 좌표를 구합니다.
-	vector<Vec4i> lines;
-	HoughLinesP(edge, lines, 1, CV_PI / 180, 160,50,5);
+	vector<Vec3f> circles;
+	//HoughCircle()함수를 이용하여 원을 검출, 축적 배열 크기는 입력 영상과 같은 크기로 사용하고, 두 원의 중심점 거리가 50픽셀보다 작으면 검출하지 않음. ㅐ니 에지 검출기의 높은 임계값은 150으로 지정하고ㅡ 축적 배열 원소 값이 3보다 크면 원의 중심점으로 선택합니다. 검출된 원의 중심 좌표와 반지를 정보를 cicles 변수에 저장.
+	HoughCircles(blurred, circles, HOUGH_GRADIENT, 1, 50, 150, 30);
 
 	Mat dst;
-	cvtColor(edge, dst, COLOR_GRAY2BGR);
+	cvtColor(src, dst, COLOR_GRAY2BGR);
 
-	//HoughLinesP() 함수에 의해 구해진 모든 직선 성분을 dst 영상 위에 빨간색 직선으로 그린다.
-	for(Vec4i l : lines)
+	//dst영상 위에 검출도니 원을 빨간색으로 그린다.
+	for(Vec3i c : circles)
 	{
-		line(dst, Point(l[0], l[1]), Point(l[2], l[3]), Scalar(0, 0, 255), 2, LINE_AA);
+		Point center(cvRound(c[0]), cvRound(c[1]));
+		int radius = cvRound(c[2]);
+		circle(dst, center, radius, Scalar(0, 0, 255), 2, LINE_AA);
+
 	}
 
 	imshow("src", src);
