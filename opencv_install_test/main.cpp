@@ -15,16 +15,24 @@ int main(void)
 		return 0;
 	}
 
-	float data[] = { -1,-1,0,-1,-1,1,0,1,1};
-	Mat emboss(3, 3, CV_32FC1, data);
-
-	Mat dst;
-	filter2D(src, dst, -1, emboss, Point(-1, -1),128);
-
 	imshow("src", src);
-	imshow("dst", dst);
+	Mat dst;
+	//ksize 값이 3,5,7이 되도록 for반복문을 설정.
+	for (int ksize = 3; ksize<=7; ksize +=2)
+	{
+		//ksize x ksize 크기릐 평균값 필터 마스크를 이용하여 블러링을 수행.
+		blur(src, dst, Size(ksize, ksize));
 
-	waitKey(0);
+		//사용된 평균값 필터의 크기를 문자열 형태로 결과 영상 dst 위에 출력.
+		String dest = format("Mean : %dx%d", ksize, ksize);
+		putText(dst, dest, Point(10, 30), FONT_HERSHEY_SIMPLEX, 1.0,
+			Scalar(255), 1, LINE_AA);
+
+
+		imshow("dst", dst);
+		waitKey(0);
+	}
+
 	destroyAllWindows();
 	return 0;
 }
