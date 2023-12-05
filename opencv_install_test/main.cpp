@@ -16,14 +16,18 @@ int main(void)
 	}
 
 	imshow("src", src);
-	Mat dst;
-	//sigma 값을 1부터 5까지 증가시키면서 가우시안 블러링을 수행하고 그 결과를 화면에 출력.
-	for (int sigma = 3; sigma <=5; sigma ++)
+	
+	//sigma 값을 1부터 5까지 증가시키면서 언샤프 마스크 필터링을 수행하고 그 결과를 화면에 출력.
+	for (int sigma = 1; sigma <=5; sigma ++)
 	{
-		//src 영상에 가우시안 표준 편차가 sigma인 가우시안 블러링을 수행하고 그 결과를 dst에 저장.
-		GaussianBlur(src, dst, Size(), (double)sigma);
+		//가우시안 필터를 이용한 블러링 영상을 plurred에 저장
+		Mat blurred;
+		GaussianBlur(src, blurred, Size(), sigma);
 
-		//사용한 가우시안 표준 편차 값을 결과 영상 dst위에 출력
+		//언샤프 마스크 필터링 수행
+		float alpha = 1.f;
+		Mat dst = (1 + alpha) * src - alpha * blurred;
+		//샤프닝 결과 영상 dst에 사용된 sigma값을 출력.
 		String dest = format("sigma = %d", sigma);
 		putText(dst, dest, Point(10, 30), FONT_HERSHEY_SIMPLEX, 1.0,
 			Scalar(255), 1, LINE_AA);
