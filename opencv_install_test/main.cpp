@@ -7,33 +7,34 @@ using namespace std;
 
 int main(void)
 {
-	Mat src = imread("lenna.bmp", IMREAD_GRAYSCALE);
+	Mat src = imread("tekapo.bmp");
 
 	if (src.empty())
 	{
 		cerr << " Images not found" << endl;
 		return 0;
 	}
+	//입력 영상과 출력 영상에서의 세 점 좌표를 저장할 srcPts와 dstPts 배열을 선언한다.
+	Point2f srcPts[3], dstPts[3];
+	//srcPts 배열에 입력 영상의 좌측 상단, 우측상단, 우측 하단의 좌표를 저장한다.
+	srcPts[0] = Point2f(0, 0);
+	srcPts[1] = Point2f(src.cols - 1, 0);
+	srcPts[2] = Point2f(src.cols - 1, src.rows - 1);
+	//dstPts배열에 srcPts 점들이 이동할 좌표를 저장한다.
+	dstPts[0] = Point2f(50, 50);
+	dstPts[1] = Point2f(src.cols - 100, 100);
+	dstPts[2] = Point2f(src.cols - 50, src.rows - 50);
 
-	//src 영상에서 10%에 해당하는 픽셀 값을 0 또는 255로 설정한다.
-	int num = (int)(src.total() * 0.1);
-	for (int i = 0; i < num; i++)
-	{
-		int x = rand() % src.cols;
-		int y = rand() % src.rows;
-		src.at<uchar>(y, x) = (i % 2) * 255;
-	}
+	//2x3 어파인 변환 행렬을 m에 저장한다.
+	Mat m = getAffineTransform(srcPts, dstPts);
 
-	//표준 편차가 인 가우시안 필터링을 수행하여 dst1에 저장
-	Mat dst1;
-	GaussianBlur(src, dst1, Size(), 1);
-	//크기가 3인 미디언 필터를 실행하여 dst2에 저장.
-	Mat dst2;
-	medianBlur(src, dst2, 3);
+	//어파인 변환 행렬m을 이용하여 src영상을 어파인 변환하여 dst에 저장한다. warpAffine()함수의 네번재 인자에 Size()를 지정하여 dst영상 크기가 src영상 크기와 같아지도록 설정하였다.
+	Mat dst;
+	warpAffine(src, dst, m, Size());
 
 	imshow("src", src);
-	imshow("dst", dst1);
-	imshow("dst2", dst2);
+	imshow("dst", dst);
+	
 
 	waitKey();
 	destroyAllWindows();
