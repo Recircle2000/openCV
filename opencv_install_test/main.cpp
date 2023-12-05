@@ -7,7 +7,7 @@ using namespace std;
 
 int main(void)
 {
-	Mat src = imread("tekapo.bmp");
+	Mat src = imread("rose.bmp");
 
 	if (src.empty())
 	{
@@ -16,16 +16,22 @@ int main(void)
 	}
 
 
-	//가로 방향으로 밀림 정도를 0.3으로 설정한 전단 변활 행렬m을 생성
-	double mx = 0.3;
-	Mat m = Mat_<double>({ 2,3 }, { 1,mx,0,0,1,0 });
+	Mat dst1, dst2, dst3, dst4;
+	//src영상을 x방향으로 4배, y방향으로 4배 확대하여 dst1을 생성한다. src영상의 크기가 480x320이므로 결과영상은 FHD로 결정. 보간법은 최근방 이웃 보간법.
+	resize(src, dst1, Size(), 4, 4, INTER_NEAREST);
+	//src 영상을 FHD크기로 확대하여 dst2를 생성. 보간법을 지정하지 않아서 기본값인 양선형 보간법 사용.
+	resize(src, dst2, Size(1920, 1080));
+	//3차 회선 보간법 사용.
+	resize(src, dst3, Size(1920, 1080), 0, 0, INTER_CUBIC);
+	//란초스 보간법 사용
+	resize(src, dst4, Size(1920, 1080), 0, 0, INTER_LANCZOS4);
 
-	Mat dst;
-	//행렬 m을 이용하여 어파인 변환 수행, 전단 변환에 의해 입력 영상의 일부가 잘리지 않도록 결과 영상 가로 크기를 cvRound()를 형태로 지정.
-	warpAffine(src, dst, m, Size(cvRound(src.cols + src.rows * mx), src.rows));
-
+	//400,500 좌표부터 400,400만큼의 부분 영상 출력
 	imshow("src", src);
-	imshow("dst", dst);
+	imshow("dst", dst1(Rect(400,500,400,400)));
+	imshow("dst2", dst2(Rect(400, 500, 400, 400)));
+	imshow("dst3", dst3(Rect(400, 500, 400, 400)));
+	imshow("dst4", dst4(Rect(400, 500, 400, 400)));
 
 	waitKey();
 	destroyAllWindows();
