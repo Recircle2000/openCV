@@ -5,36 +5,62 @@
 using namespace cv;
 using namespace std;
 
-int main(void)
+Mat src;
+Point2f srcQuad[4], dstQuad[4];
+
+void on_mouse(int event, int x, int y, int flags, void* userdata);
+int main()
 {
-	Mat src = imread("rose.bmp");
+	src = imread("card.bmp");
 
 	if (src.empty())
 	{
 		cerr << " Images not found" << endl;
-		return 0;
+		return -1;
 	}
+
+	namedWindow("src");
+	setMouseCallback("src", on_mouse);
 
 	imshow("src", src);
-
-	Mat dst;
-	//flip()함수에 전달할 flipCOde 세 개를 정수형 배열에 저장.
-	//양수 : 좌우대칭, 0 : 상하대칭, -1 : 상하, 좌우 모두
-	int flipCode[] = {1, 0, -1};
-	for (int i = 0; i < 3; ++i)
-	{
-		//flipCode 배열에 저장된 정수 값을 이용하여 대칭 변활을 수행한다.
-		flip(src, dst, flipCode[i]);
-
-		String desc = format("flopCOde: %d", flipCode[i]);
-		putText(dst, desc, Point(10, 30), FONT_HERSHEY_SIMPLEX, 1.0, Scalar(255, 0, 0), 1, LINE_AA);
-
-		imshow("dst", dst);
-		waitKey();
-	}
+	waitKey(0);
 	
 	destroyAllWindows();
 	return 0;
+}
+
+void on_mouse(int event, int x, int y, int flags, void*)
+{
+	static int cnt = 0;
+
+	if (event == EVENT_LBUTTONDOWN)
+	{
+		if (cnt < 4)
+		{
+			srcQuad[cnt++] = Point2f(x, y);
+
+			circle(src, Point(x, y), 5, Scalar(0, 0, 255), -1);
+			imshow("src", src);
+
+			if (cnt == 4)
+			{
+				int w = 200, h = 300;
+
+				dstQuad[0] = Point2f(0, 0);
+				dstQuad[1] = Point2f(w - 1, 0);
+				dstQuad[2] = Point2f(w - 1, h - 1);
+				dstQuad[3] = Point2f(0, h - 1);
+
+				Mat pers = getPerspectiveTransform(srcQuad, dstQuad);
+
+				Mat dst;
+				warpPerspective(src, dst, pers, Size(w, h));
+
+				imshow("dst", dst);
+
+			}
+		}
+	}
 }
 
 
